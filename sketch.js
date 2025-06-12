@@ -4,8 +4,8 @@ let isPlaying = false;
 
 // Load sound file before setup() function runs
 function preload() {
-  // Load the sound file
-  sound = loadSound("hey-moon.mp3");
+  // Load the sound file (update to own file if using local file)
+  sound = loadSound("mp3s/hey-moon.mp3");
 }
 
 function setup() {
