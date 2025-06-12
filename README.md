@@ -68,6 +68,9 @@ http://localhost:8000
 - The bars' heights represent the amplitude of different frequency bands
 - The visualization is responsive and will adjust to your window size
 
+`width` = canvas width, var from p5
+`height` = canvas height, var from p5
+
 ## License
 
 [Your chosen license]
