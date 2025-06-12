@@ -20,7 +20,7 @@ A simple audio visualizer built with p5.js that creates a real-time visualizatio
 1. Clone this repository:
 
 ```bash
-git clone [your-repo-url]
+git clone https://github.com/CogappLabs/audio-visualiser.git
 cd audio-visualiser
 ```
 
@@ -30,7 +30,7 @@ cd audio-visualiser
    - Update the filename in `sketch.js` to match your audio file:
 
    ```javascript
-   sound = loadSound("your-audio-file.mp3");
+   sound = loadSound("<your-audio-file>.mp3");
    ```
 
 3. Start a local server:
