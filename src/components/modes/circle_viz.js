@@ -20,8 +20,6 @@ const circleViz = (p) => {
   let blurRadius; // How much larger the blur is than the main circle
   let sound;
   let fft;
-  let isPlaying = false;
-  let audioPath;
 
   p.setup = () => {
     p.createCanvas(p.windowWidth, p.windowHeight);
@@ -44,41 +42,36 @@ const circleViz = (p) => {
     blurRadius = 60;
 
     // Set up FFT
+    console.log("Initializing FFT in circle_viz");
     fft = new p5.FFT();
+    console.log("FFT initialized:", fft);
     p.noStroke();
   };
 
   p.setAudio = async (path) => {
-    audioPath = path;
     try {
-      sound = await p.loadSound(audioPath);
-      setupControls();
+      // Wait for FFT to be initialized
+      if (!fft) {
+        console.log("Waiting for FFT initialization...");
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+
+      console.log("Loading sound in circle_viz...");
+      sound = await p.loadSound(path);
+      console.log("Sound loaded in circle_viz:", sound);
+
+      if (fft) {
+        console.log("Connecting sound to FFT in circle_viz");
+        sound.connect(fft);
+        return sound; // Return the sound object
+      } else {
+        console.error("FFT not initialized in circle_viz");
+        return null;
+      }
     } catch (error) {
-      console.error("Error loading sound:", error);
+      console.error("Error loading sound in circle_viz:", error);
+      return null;
     }
-  };
-
-  const setupControls = () => {
-    const playButton = document.getElementById("playButton");
-    const stopButton = document.getElementById("stopButton");
-
-    playButton.addEventListener("click", () => {
-      if (!isPlaying) {
-        sound.loop();
-        isPlaying = true;
-        playButton.style.display = "none";
-        stopButton.style.display = "block";
-      }
-    });
-
-    stopButton.addEventListener("click", () => {
-      if (isPlaying) {
-        sound.stop();
-        isPlaying = false;
-        stopButton.style.display = "none";
-        playButton.style.display = "block";
-      }
-    });
   };
 
   p.draw = () => {

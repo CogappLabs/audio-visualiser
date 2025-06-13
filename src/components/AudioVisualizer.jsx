@@ -194,6 +194,9 @@ const AudioVisualizer = () => {
             };
 
             checkSoundLoaded();
+          } else {
+            console.error("Failed to load sound");
+            setIsLoading(false);
           }
         }
 
