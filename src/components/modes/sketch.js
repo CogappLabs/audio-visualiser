@@ -1,10 +1,9 @@
 import p5 from "p5";
 
-const sketch = (p, isPlaying) => {
+const sketch = (p) => {
   let fft;
   let audioPath;
   let sound;
-  let playing = isPlaying; // Store the isPlaying state locally
 
   p.setup = () => {
     console.log("p5 setup called");
@@ -39,16 +38,12 @@ const sketch = (p, isPlaying) => {
     }
   };
 
-  // Add a method to update the playing state
-  p.updatePlaying = (newState) => {
-    console.log("Updating playing state:", newState);
-    playing = newState;
-  };
-
   p.draw = () => {
     p.background(0, 30);
 
-    if (playing && fft) {
+    // Check if sound exists and is playing
+    if (sound && sound.isPlaying() && fft) {
+      console.log("Drawing visualization...");
       let spectrum = fft.analyze();
       let size = p.width / spectrum.length;
 

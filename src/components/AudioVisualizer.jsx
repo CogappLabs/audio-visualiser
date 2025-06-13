@@ -23,9 +23,9 @@ const AudioVisualizer = () => {
   const location = useLocation();
   const { audioPath, mode } = location.state || {};
 
-  const [isPlaying, setIsPlaying] = useState(true); // Start with true for auto-play
   const [sound, setSound] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const setupControls = () => {
     console.log("Setting up controls...");
@@ -39,7 +39,7 @@ const AudioVisualizer = () => {
 
     playButton.addEventListener("click", () => {
       console.log("Play button clicked, sound state:", sound);
-      if (!isPlaying && sound) {
+      if (sound && !sound.isPlaying()) {
         try {
           console.log("Attempting to play sound...");
           sound.play();
@@ -55,7 +55,7 @@ const AudioVisualizer = () => {
 
     stopButton.addEventListener("click", () => {
       console.log("Stop button clicked");
-      if (isPlaying && sound) {
+      if (sound && sound.isPlaying()) {
         try {
           sound.stop();
           setIsPlaying(false);
@@ -107,11 +107,8 @@ const AudioVisualizer = () => {
             p5Instance.current.remove();
           }
 
-          // Create new instance with isPlaying state
-          p5Instance.current = new p5(
-            (p) => selectedMode(p, isPlaying),
-            sketchRef.current
-          );
+          // Create new instance
+          p5Instance.current = new p5(selectedMode, sketchRef.current);
           console.log("Loading audio...");
           const loadedSound = await p5Instance.current.setAudio(audioPath);
           console.log("Audio loaded:", !!loadedSound);
@@ -169,14 +166,6 @@ const AudioVisualizer = () => {
       }
     };
   }, [audioPath, mode]);
-
-  // Update p5 instance when isPlaying changes
-  useEffect(() => {
-    console.log("isPlaying changed:", isPlaying);
-    if (p5Instance.current) {
-      p5Instance.current.updatePlaying(isPlaying);
-    }
-  }, [isPlaying]);
 
   if (!audioPath || !mode) {
     console.log("Missing props:", { audioPath, mode });
