@@ -7,8 +7,7 @@ import p5 from "p5";
 const circleViz = (p) => {
   // === Configurable Variables ===
   let bgColor1, bgColor2; // Background gradient colors
-  let circleColor1, circleColor2; // Circle fill gradient colors
-  let strokeColor; // Outline color
+  let baseHue; // Base hue for the circle
   let baseStrokeThickness; // Base outline thickness
   let outlineNoiseScale; // How much noise affects thickness
   let outlineNoiseSpeed; // How fast the noise animates
@@ -20,6 +19,7 @@ const circleViz = (p) => {
   let blurRadius; // How much larger the blur is than the main circle
   let sound;
   let fft;
+  let lastEnergy = 0; // For smooth transitions
 
   p.setup = () => {
     p.createCanvas(p.windowWidth, p.windowHeight);
@@ -28,9 +28,7 @@ const circleViz = (p) => {
     // === Set initial values ===
     bgColor1 = p.color(10, 100, 30); // dark blue
     bgColor2 = p.color(0, 255, 60); // dark red
-    circleColor1 = p.color(0, 255, 80); // red
-    circleColor2 = p.color(120, 255, 80); // green
-    strokeColor = p.color(0, 0, 255); // white
+    baseHue = 180; // Base hue for the circle
     baseStrokeThickness = 80;
     outlineNoiseScale = 50;
     outlineNoiseSpeed = 0.2;
@@ -89,9 +87,22 @@ const circleViz = (p) => {
       1
     );
 
-    // Animate circle fill gradient
-    let cLerp = (p.cos(t * 1.5) + 1) / 2;
-    let fillCol = p.lerpColor(circleColor1, circleColor2, cLerp);
+    // Analyze the audio
+    fft.analyze();
+
+    // Get current energy from FFT
+    let currentEnergy = fft.getEnergy("highMid");
+    console.log("Current energy:", currentEnergy); // Debug log
+
+    // Smooth the energy transition
+    lastEnergy = p.lerp(lastEnergy, currentEnergy, 0.1);
+
+    // Create circle color based on energy
+    let fillCol = p.color(
+      (baseHue + lastEnergy) % 255, // Rotate hue based on energy
+      200, // High saturation
+      p.map(lastEnergy, 0, 255, 100, 255) // Brightness based on energy
+    );
 
     // Circle parameters
     let cx = p.width / 2;
