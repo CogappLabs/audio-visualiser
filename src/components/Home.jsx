@@ -15,8 +15,16 @@ const Home = () => {
   const navigate = useNavigate();
 
   const audioFiles = [
-    { name: "Hey Moon", path: "/sources/hey-moon.mp3" },
-    { name: "Gaps", path: "/sources/gaps/gaps.mp3" },
+    {
+      name: "Hey Moon",
+      path: "/sources/hey-moon/hey-moon.mp3",
+      html: "/sources/hey-moon/hey-moon.html",
+    },
+    {
+      name: "Gaps",
+      path: "/sources/gaps/gaps.mp3",
+      html: "/sources/gaps/gaps.html",
+    },
     { name: "The Jellyfish", path: "/sources/jellyfish/jellyfish.mp3" },
     { name: "FunK with IIIF", path: "/sources/iiif/iiif.mp3" },
     // Add more audio files here
@@ -25,12 +33,17 @@ const Home = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (selectedAudio) {
+      // Find the selected audio file object
+      const selectedAudioFile = audioFiles.find(
+        (file) => file.path === selectedAudio
+      );
+
       // Go into fullscreen
       document.body.requestFullscreen();
       // Navigate to AudioVisualizer view
       navigate("/visualizer", {
         state: {
-          audioPath: selectedAudio,
+          audioFile: selectedAudioFile,
           mode: selectedMode,
         },
       });

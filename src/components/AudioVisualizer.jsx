@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import p5 from "p5";
 import { useLocation } from "react-router-dom";
-import TextOverlay from './TextOverlay';
-
+import TextOverlay from "./TextOverlay";
 
 // Import modes
 import sketchMode from "./modes/sketch";
@@ -25,17 +24,17 @@ const AudioVisualizer = () => {
   const sketchRef = useRef(null);
   const p5Instance = useRef(null);
   const location = useLocation();
-  const { audioPath, mode } = location.state || {};
+  const { audioFile, mode } = location.state || {};
 
   const [sound, setSound] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showOverlay, setShowOverlay] = useState(false);
-  const [fragmentPath, setFragmentPath] = useState('');
+  const [fragmentPath, setFragmentPath] = useState("");
 
   const showTextClick = () => {
     console.log("showing text");
-    setFragmentPath('/sources/gaps/gaps.html');
+    setFragmentPath(audioFile.html);
     setShowOverlay(true);
   };
 
@@ -97,9 +96,9 @@ const AudioVisualizer = () => {
     let isActive = true; // Flag to track if component is mounted
 
     const initializeVisualizer = async () => {
-      console.log("Initializing visualizer...", { audioPath, mode });
-      if (!audioPath || !mode || !isActive) {
-        console.log("Missing required props:", { audioPath, mode });
+      console.log("Initializing visualizer...", { audioFile, mode });
+      if (!audioFile?.path || !mode || !isActive) {
+        console.log("Missing required props:", { audioFile, mode });
         return;
       }
 
@@ -127,7 +126,7 @@ const AudioVisualizer = () => {
           // Create new instance
           p5Instance.current = new p5(selectedMode, sketchRef.current);
           console.log("Loading audio...");
-          const loadedSound = await p5Instance.current.setAudio(audioPath);
+          const loadedSound = await p5Instance.current.setAudio(audioFile.path);
           console.log("Audio loaded:", !!loadedSound);
 
           if (loadedSound) {
@@ -182,10 +181,10 @@ const AudioVisualizer = () => {
         sound.stop();
       }
     };
-  }, [audioPath, mode]);
+  }, [audioFile, mode]);
 
-  if (!audioPath || !mode) {
-    console.log("Missing props:", { audioPath, mode });
+  if (!audioFile?.path || !mode) {
+    console.log("Missing props:", { audioFile, mode });
     return (
       <div>No audio file or mode selected. Please go back and select both.</div>
     );
@@ -212,7 +211,9 @@ const AudioVisualizer = () => {
         >
           Stop
         </button>
-        {!showOverlay && <button onClick={showTextClick}>Show text</button>}
+        {audioFile.html && !showOverlay && (
+          <button onClick={showTextClick}>Show text</button>
+        )}
         {showOverlay && <button onClick={hideTextClick}>Hide text</button>}
       </div>
     </div>
