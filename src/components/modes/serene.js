@@ -55,11 +55,6 @@ const serene = (p) => {
       for (let i = 0; i < spectrum.length; i++) {
         let x = p.map(i, 0, spectrum.length, 0, p.width);
         let y = p.map(spectrum[i], 0, 255, p.height, 0);
-
-        // Add some color variation based on frequency
-        let hue = p.map(i, 0, spectrum.length, 180, 360);
-        p.fill(hue, 80, 100);
-
         p.rect(x, y, size, p.height - y);
       }
     }
