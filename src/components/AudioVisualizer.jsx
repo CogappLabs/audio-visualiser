@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import p5 from "p5";
 import { useLocation } from "react-router-dom";
+import TextOverlay from './TextOverlay';
+
 
 // Import modes
 import sketchMode from "./modes/sketch";
@@ -28,6 +30,19 @@ const AudioVisualizer = () => {
   const [sound, setSound] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showOverlay, setShowOverlay] = useState(false);
+  const [fragmentPath, setFragmentPath] = useState('');
+
+  const showTextClick = () => {
+    console.log("showing text");
+    setFragmentPath('/sources/gaps/gaps.html');
+    setShowOverlay(true);
+  };
+
+  const hideTextClick = () => {
+    console.log("hiding text");
+    setShowOverlay(false);
+  };
 
   const setupControls = () => {
     console.log("Setting up controls...");
@@ -183,6 +198,7 @@ const AudioVisualizer = () => {
   return (
     <div>
       <div ref={sketchRef}></div>
+      {showOverlay && <TextOverlay fragmentPath={fragmentPath} />}
       <div className="controls">
         <button
           id="playButton"
@@ -196,6 +212,8 @@ const AudioVisualizer = () => {
         >
           Stop
         </button>
+        {!showOverlay && <button onClick={showTextClick}>Show text</button>}
+        {showOverlay && <button onClick={hideTextClick}>Hide text</button>}
       </div>
     </div>
   );

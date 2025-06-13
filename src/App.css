@@ -61,3 +61,24 @@ button:disabled {
   gap: 1rem;
   z-index: 1000;
 }
+
+.centered-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  z-index: 9999;
+  padding: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  text-align: left;
+  max-height: 75vh;
+  /* limit height to 80% of viewport */
+  overflow-y: auto;
+  /* enable vertical scrolling if needed */
+  width: 80vw;
+  /* optional: limit width too */
+  max-width: 600px;
+  /* optional: limit max width for better appearance */
+}
