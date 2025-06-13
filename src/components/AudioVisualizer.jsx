@@ -1,6 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import p5 from "p5";
 import { useLocation } from "react-router-dom";
+import TextOverlay from './TextOverlay';
+
 
 // Import modes
 import sketchMode from "./modes/sketch";
@@ -22,6 +24,20 @@ const AudioVisualizer = () => {
   const p5Instance = useRef(null);
   const location = useLocation();
   const { audioPath, mode } = location.state || {};
+
+  const [showOverlay, setShowOverlay] = useState(false);
+  const [fragmentPath, setFragmentPath] = useState('');
+
+  const showTextClick = () => {
+    console.log("showing text");
+    setFragmentPath('/sources/gaps/gaps.html');
+    setShowOverlay(true);
+  };
+
+  const hideTextClick = () => {
+    console.log("hiding text");
+    setShowOverlay(false);
+  };
 
   useEffect(() => {
     let isActive = true; // Flag to track if component is mounted
@@ -76,11 +92,14 @@ const AudioVisualizer = () => {
   return (
     <div>
       <div ref={sketchRef}></div>
+      {showOverlay && <TextOverlay fragmentPath={fragmentPath} />}
       <div className="controls">
         <button id="playButton">Play</button>
         <button id="stopButton" style={{ display: "none" }}>
           Stop
         </button>
+        {!showOverlay && <button onClick={showTextClick}>Show text</button>}
+        {showOverlay && <button onClick={hideTextClick}>Hide text</button>}
       </div>
     </div>
   );

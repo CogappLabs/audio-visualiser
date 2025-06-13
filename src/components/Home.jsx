@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const MODES = {
-  sketch: "Sketch",
+  sketch: "Level meter",
   serene: "Serene",
   zen: "Zen",
   // Add more modes here as they are created
@@ -15,6 +15,9 @@ const Home = () => {
 
   const audioFiles = [
     { name: "Hey Moon", path: "/sources/hey-moon.mp3" },
+    { name: "Gaps", path: "/sources/gaps/gaps.mp3" },
+    { name: "The Jellyfish", path: "/sources/jellyfish/jellyfish.mp3" },
+    { name: "FunK with IIIF", path: "/sources/iiif/iiif.mp3" },
     // Add more audio files here
   ];
 

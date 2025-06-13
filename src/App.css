@@ -61,3 +61,21 @@ button:disabled {
   gap: 1rem;
   z-index: 1000;
 }
+
+.centered-overlay {
+  position: fixed;
+  /* stays in place even on scroll */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* perfect centering */
+  background-color: white;
+  z-index: 9999;
+  /* on top of most elements */
+  padding: 20px;
+  /* optional: some padding */
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  /* optional: subtle shadow */
+  border-radius: 8px;
+  /* optional: rounded corners */
+}
