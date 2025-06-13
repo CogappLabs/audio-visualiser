@@ -92,6 +92,41 @@ const AudioVisualizer = () => {
     }
   }, [isLoading, sound]);
 
+  // Cleanup effect for sound
+  useEffect(() => {
+    return () => {
+      if (sound) {
+        console.log("Cleaning up sound...");
+        try {
+          sound.stop();
+          sound.disconnect();
+        } catch (error) {
+          console.error("Error cleaning up sound:", error);
+        }
+      }
+    };
+  }, [sound]);
+
+  // Handle browser back button and component unmount
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (sound) {
+        console.log("Stopping sound before unload...");
+        sound.stop();
+        sound.disconnect();
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("popstate", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("popstate", handleBeforeUnload);
+      handleBeforeUnload(); // Also clean up when component unmounts
+    };
+  }, [sound]);
+
   useEffect(() => {
     let isActive = true; // Flag to track if component is mounted
 
@@ -169,17 +204,33 @@ const AudioVisualizer = () => {
 
     initializeVisualizer();
 
-    // Cleanup function
     return () => {
-      console.log("Cleaning up...");
-      isActive = false; // Prevent any async operations from continuing
-      if (p5Instance.current) {
-        p5Instance.current.remove();
-        p5Instance.current = null;
-      }
+      console.log("Cleaning up AudioVisualizer...");
+      isActive = false;
+
       if (sound) {
-        sound.stop();
+        console.log("Stopping sound on cleanup...");
+        try {
+          sound.stop();
+          sound.disconnect();
+        } catch (error) {
+          console.error("Error stopping sound during cleanup:", error);
+        }
       }
+
+      if (p5Instance.current) {
+        console.log("Removing p5 instance...");
+        try {
+          p5Instance.current.remove();
+          p5Instance.current = null;
+        } catch (error) {
+          console.error("Error removing p5 instance:", error);
+        }
+      }
+
+      setSound(null);
+      setIsPlaying(false);
+      setShowOverlay(false);
     };
   }, [audioFile, mode]);
 
