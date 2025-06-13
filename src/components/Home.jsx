@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 const MODES = {
   sketch: "Sketch",
   serene: "Serene",
+  zen: "Zen",
   // Add more modes here as they are created
 };
 

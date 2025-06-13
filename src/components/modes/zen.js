@@ -1,18 +1,13 @@
 import p5 from "p5";
 
-const serene = (p) => {
+const zen = (p) => {
   let sound;
-  let fft;
   let isPlaying = false;
   let audioPath;
-  let c;
 
   p.setup = () => {
     p.createCanvas(window.innerWidth, window.innerHeight);
-    fft = new p5.FFT();
     p.noStroke();
-    p.colorMode(p.HSB, 100);
-    c = p.color(10, 20, 50);
   };
 
   p.setAudio = async (path) => {
@@ -49,25 +44,8 @@ const serene = (p) => {
   };
 
   p.draw = () => {
-    // p.background(c);
+    p.background(0, 30);
 
-    if (isPlaying && fft) {
-      let spectrum = fft.analyze();
-      let size = p.width / spectrum.length;
-
-      for (let i = 0; i < spectrum.length; i++) {
-        let x = p.map(i, 0, spectrum.length, 0, p.width);
-        let y = p.map(spectrum[i], 0, 255, p.height, 0);
-        p.rect(x, y, size, p.height - y);
-
-        let energy = p.map(fft.getEnergy("bass", "treble"), 0, 255, 0, 100);
-        let c1 = p.color(50, 50, energy);
-        p.background(c1);
-        console.log("y", y);
-        console.log("energy", energy);
-
-      }
-    }
   };
 
   p.windowResized = () => {
@@ -75,4 +53,4 @@ const serene = (p) => {
   };
 };
 
-export default serene;
+export default zen;
