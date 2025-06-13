@@ -10,7 +10,6 @@ export default defineConfig({
       "p5/lib/addons/p5.sound": "p5/lib/addons/p5.sound.js",
     },
   },
-  publicDir: "sources",
   build: {
     rollupOptions: {
       input: {
