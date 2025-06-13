@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 import sketchMode from "./modes/sketch";
 import sereneMode from "./modes/serene";
 import zenMode from "./modes/zen";
+import cursorSpecialMode from "./modes/cursor-special";
 
 // Make p5 available globally
 window.p5 = p5;
@@ -14,6 +15,7 @@ const MODES = {
   sketch: sketchMode,
   serene: sereneMode,
   zen: zenMode,
+  "cursor-special": cursorSpecialMode,
   // Add more modes here as they are created
 };
 

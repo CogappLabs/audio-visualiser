@@ -1,22 +1,19 @@
 import p5 from "p5";
 
-const serene = (p) => {
+const cursor = (p) => {
   let sound;
   let fft;
   let audioPath;
-  let c;
 
   p.setup = () => {
-    console.log("Serene mode setup called");
+    console.log("Cursor mode setup called");
     p.createCanvas(window.innerWidth, window.innerHeight);
     fft = new p5.FFT();
     p.noStroke();
-    p.colorMode(p.HSB, 100);
-    c = p.color(10, 20, 50);
   };
 
   p.setAudio = async (path) => {
-    console.log("Serene mode setAudio called with path:", path);
+    console.log("Cursor mode setAudio called with path:", path);
     audioPath = path;
     try {
       // Make sure FFT is initialized
@@ -42,20 +39,25 @@ const serene = (p) => {
   };
 
   p.draw = () => {
+    p.background(0, 30);
+
     // Check if sound exists and is playing
     if (sound && sound.isPlaying() && fft) {
-      console.log("Drawing serene visualization...");
+      console.log("Drawing cursor visualization...");
       let spectrum = fft.analyze();
       let size = p.width / spectrum.length;
 
       for (let i = 0; i < spectrum.length; i++) {
-        let x = p.map(i, 0, spectrum.length, 0, p.width);
-        let y = p.map(spectrum[i], 0, 255, p.height, 0);
-        p.rect(x, y, size, p.height - y);
+        // Create a circular visualization
+        let angle = p.map(i, 0, spectrum.length, 0, p.TWO_PI);
+        let radius = p.map(spectrum[i], 0, 255, 50, p.width / 2);
+        let x = p.width / 2 + p.cos(angle) * radius;
+        let y = p.height / 2 + p.sin(angle) * radius;
 
-        let energy = p.map(fft.getEnergy("bass", "treble"), 0, 255, 0, 100);
-        let c1 = p.color(50, 50, energy);
-        p.background(c1);
+        // Use a gradient color based on frequency
+        let hue = p.map(i, 0, spectrum.length, 0, 360);
+        p.fill(hue, 80, 80, 100);
+        p.ellipse(x, y, size * 2, size * 2);
       }
     }
   };
@@ -65,4 +67,4 @@ const serene = (p) => {
   };
 };
 
-export default serene;
+export default cursor;

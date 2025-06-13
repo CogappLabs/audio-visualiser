@@ -5,6 +5,7 @@ const MODES = {
   sketch: "Sketch",
   serene: "Serene",
   zen: "Zen",
+  "cursor-special": "Cursor Special",
   // Add more modes here as they are created
 };
 

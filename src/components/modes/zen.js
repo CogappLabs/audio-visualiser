@@ -2,50 +2,44 @@ import p5 from "p5";
 
 const zen = (p) => {
   let sound;
-  let isPlaying = false;
+  let fft;
   let audioPath;
 
   p.setup = () => {
+    console.log("Zen mode setup called");
     p.createCanvas(window.innerWidth, window.innerHeight);
+    fft = new p5.FFT();
     p.noStroke();
   };
 
   p.setAudio = async (path) => {
+    console.log("Zen mode setAudio called with path:", path);
     audioPath = path;
     try {
+      // Make sure FFT is initialized
+      if (!fft) {
+        console.log("Initializing FFT...");
+        fft = new p5.FFT();
+      }
+
+      console.log("Loading sound...");
       sound = await p.loadSound(audioPath);
-      setupControls();
+      console.log("Sound loaded:", !!sound);
+
+      // Connect the sound to the FFT analyzer
+      console.log("Connecting sound to FFT...");
+      fft.setInput(sound);
+      console.log("Sound connected to FFT");
+
+      return sound; // Return the sound object to be managed by AudioVisualizer
     } catch (error) {
       console.error("Error loading sound:", error);
+      return null;
     }
-  };
-
-  const setupControls = () => {
-    const playButton = document.getElementById("playButton");
-    const stopButton = document.getElementById("stopButton");
-
-    playButton.addEventListener("click", () => {
-      if (!isPlaying) {
-        sound.loop();
-        isPlaying = true;
-        playButton.style.display = "none";
-        stopButton.style.display = "block";
-      }
-    });
-
-    stopButton.addEventListener("click", () => {
-      if (isPlaying) {
-        sound.stop();
-        isPlaying = false;
-        stopButton.style.display = "none";
-        playButton.style.display = "block";
-      }
-    });
   };
 
   p.draw = () => {
     p.background(0, 30);
-
   };
 
   p.windowResized = () => {
