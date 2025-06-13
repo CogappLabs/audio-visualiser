@@ -10,11 +10,6 @@ export default defineConfig({
       "p5/lib/addons/p5.sound": "p5/lib/addons/p5.sound.js",
     },
   },
-  publicDir: "sources",
-  server: {
-    port: 5173,
-    open: true,
-  },
   build: {
     rollupOptions: {
       input: {

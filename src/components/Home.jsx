@@ -13,7 +13,7 @@ const Home = () => {
   const navigate = useNavigate();
 
   const audioFiles = [
-    { name: "Hey Moon", path: "/hey-moon.mp3" },
+    { name: "Hey Moon", path: "/sources/hey-moon.mp3" },
     // Add more audio files here
   ];
 
