@@ -22,23 +22,45 @@ const AudioVisualizer = () => {
   const { audioPath, mode } = location.state || {};
 
   useEffect(() => {
-    if (!audioPath || !mode) return;
+    let isActive = true; // Flag to track if component is mounted
 
-    // Dynamically import p5.sound
-    import("p5/lib/addons/p5.sound.js").then(() => {
-      const selectedMode = MODES[mode];
-      if (!selectedMode) {
-        console.error(`Mode ${mode} not found`);
-        return;
+    const initializeVisualizer = async () => {
+      if (!audioPath || !mode || !isActive) return;
+
+      try {
+        // Dynamically import p5.sound
+        await import("p5/lib/addons/p5.sound.js");
+
+        const selectedMode = MODES[mode];
+        if (!selectedMode) {
+          console.error(`Mode ${mode} not found`);
+          return;
+        }
+
+        // Only create new instance if we don't have one or if it was removed
+        if (!p5Instance.current || !p5Instance.current.canvas) {
+          // Clean up any existing instance
+          if (p5Instance.current) {
+            p5Instance.current.remove();
+          }
+
+          // Create new instance
+          p5Instance.current = new p5(selectedMode, sketchRef.current);
+          await p5Instance.current.setAudio(audioPath);
+        }
+      } catch (error) {
+        console.error("Error initializing visualizer:", error);
       }
+    };
 
-      p5Instance.current = new p5(selectedMode, sketchRef.current);
-      p5Instance.current.setAudio(audioPath);
-    });
+    initializeVisualizer();
 
+    // Cleanup function
     return () => {
+      isActive = false; // Prevent any async operations from continuing
       if (p5Instance.current) {
         p5Instance.current.remove();
+        p5Instance.current = null;
       }
     };
   }, [audioPath, mode]);
