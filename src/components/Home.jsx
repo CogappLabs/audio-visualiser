@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-// Import available modes
-import sketchMode from "./modes/sketch";
-import sereneMode from "./modes/serene";
-
 const MODES = {
   sketch: "Sketch",
   serene: "Serene",
@@ -17,7 +13,8 @@ const Home = () => {
   const navigate = useNavigate();
 
   const audioFiles = [
-    { name: "Hey Moon", path: "/mp3s/hey-moon.mp3" },
+    { name: "Hey Moon", path: "/sources/hey-moon.mp3" },
+    { name: "Gaps", path: "/sources/gaps.mp4" },
     // Add more audio files here
   ];
 

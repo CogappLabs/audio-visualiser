@@ -89,9 +89,8 @@ src/
    - Export a p5 sketch function
    - Implement `setup`, `draw`, and `setAudio` methods
    - Add any custom visualization logic
-3. Import and add the new mode to the `MODES` object in both:
-   - `src/components/Home.jsx`
-   - `src/components/AudioVisualizer.jsx`
+3. Import and add the new mode to the `MODES` object in `src/components/AudioVisualizer.jsx`
+4. Add the name of the new mode to the `MODES` object in `src/components/Home.jsx`
 
 ## Development Notes
 
