@@ -24,7 +24,7 @@ const circleViz = (p) => {
   let audioPath;
 
   p.setup = () => {
-    p.createCanvas(window.innerWidth, window.innerHeight);
+    p.createCanvas(p.windowWidth, p.windowHeight);
     p.colorMode(p.HSB, 255);
 
     // === Set initial values ===
@@ -34,7 +34,7 @@ const circleViz = (p) => {
     circleColor2 = p.color(120, 255, 80); // green
     strokeColor = p.color(0, 0, 255); // white
     baseStrokeThickness = 80;
-    outlineNoiseScale = 3;
+    outlineNoiseScale = 50;
     outlineNoiseSpeed = 0.2;
     outlineBlurSteps = 8;
     outlineBlurAlpha = 60;
@@ -100,25 +100,15 @@ const circleViz = (p) => {
     let cLerp = (p.cos(t * 1.5) + 1) / 2;
     let fillCol = p.lerpColor(circleColor1, circleColor2, cLerp);
 
-    // --- Audio-driven circle size ---
-    let baseRadius = p.min(p.width, p.height) * 0.3;
+    // Circle parameters
     let cx = p.width / 2;
     let cy = p.height / 2;
-    let audioScale = 1;
-    if (isPlaying) {
-      let spectrum = fft.analyze();
-      let avg = spectrum.reduce((a, b) => a + b, 0) / spectrum.length;
-      // Map avg: 0 -> 0.1, 255 -> 1.0
-      audioScale = p.map(avg, 0, 255, 0.1, 1.0);
-    } else {
-      audioScale = 0.1;
-    }
-    let animatedRadius = baseRadius * audioScale;
+    let baseRadius = p.min(p.width, p.height) * 0.3;
 
     // Draw blurred edge (fake blur by drawing many circles)
     p.noStroke();
     for (let i = blurSteps; i > 0; i--) {
-      let r = animatedRadius + p.map(i, 0, blurSteps, 0, blurRadius);
+      let r = baseRadius + p.map(i, 0, blurSteps, 0, blurRadius);
       let a = blurAlpha * (i / blurSteps);
       p.fill(p.hue(fillCol), p.saturation(fillCol), p.brightness(fillCol), a);
       p.ellipse(cx, cy, r * 2, r * 2);
@@ -126,28 +116,18 @@ const circleViz = (p) => {
 
     // Draw main filled circle
     p.fill(fillCol);
-    p.ellipse(cx, cy, animatedRadius * 2, animatedRadius * 2);
+    p.ellipse(cx, cy, baseRadius * 2, baseRadius * 2);
 
     // Draw blurred, noisy outline
     for (let b = outlineBlurSteps; b > 0; b--) {
       let blurR =
-        animatedRadius + p.map(b, 0, outlineBlurSteps, 0, outlineBlurRadius);
+        baseRadius + p.map(b, 0, outlineBlurSteps, 0, outlineBlurRadius);
       let blurT =
         baseStrokeThickness +
         p.map(b, 0, outlineBlurSteps, 0, outlineBlurRadius * 1.2);
       let blurA = outlineBlurAlpha * (b / outlineBlurSteps);
       drawNoisyOutline(cx, cy, blurR, blurT, blurA, fillCol, t);
     }
-    // Draw main outline
-    drawNoisyOutline(
-      cx,
-      cy,
-      animatedRadius,
-      baseStrokeThickness,
-      255,
-      strokeColor,
-      t
-    );
   };
 
   // Draw a noisy, variable-thickness ring outline
@@ -218,7 +198,7 @@ const circleViz = (p) => {
   }
 
   p.windowResized = () => {
-    p.resizeCanvas(window.innerWidth, window.innerHeight);
+    p.resizeCanvas(p.windowWidth, p.windowHeight);
   };
 };
 
