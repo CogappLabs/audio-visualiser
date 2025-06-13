@@ -1,72 +1,103 @@
+# React + Vite
+
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
 # Audio Visualizer
 
-A simple audio visualizer built with p5.js that creates a real-time visualization of audio frequencies. The visualization consists of vertical bars that respond to the frequency spectrum of the audio being played.
+A React-based audio visualizer that creates dynamic visualizations using p5.js. The application allows users to select different audio files and visualization modes to create unique visual experiences.
 
 ## Features
 
-- Real-time audio frequency visualization
+- Multiple visualization modes
+- Audio file selection
+- Real-time frequency analysis
+- Responsive canvas that adapts to window size
 - Play/Stop controls
-- Responsive design that adapts to window size
-- Works with any MP3 file
 
 ## Prerequisites
 
-- A modern web browser (Chrome, Firefox, Safari, etc.)
-- Python 3.x (for running the local server)
-- An MP3 file to visualize
+- Node.js (v14 or higher)
+- npm or yarn
 
 ## Setup
 
-1. Clone this repository:
+1. Clone the repository:
 
 ```bash
-git clone https://github.com/CogappLabs/audio-visualiser.git
+git clone <repository-url>
 cd audio-visualiser
 ```
 
-2. Replace the default audio file:
+2. Install dependencies:
 
-   - Place your MP3 file in the root directory
-   - Update the filename in `sketch.js` to match your audio file:
+```bash
+npm install
+# or
+yarn
+```
+
+3. Add your audio files:
+
+   - Create an `mp3s` directory in the `public` folder if it doesn't exist
+   - Add your MP3 files to the `public/mp3s` directory
+   - Update the `audioFiles` array in `src/components/Home.jsx` with your audio files:
 
    ```javascript
-   sound = loadSound("<your-audio-file>.mp3");
+   const audioFiles = [
+     { name: "Your Audio Name", path: "/mp3s/your-audio-file.mp3" },
+     // Add more audio files here
+   ];
    ```
 
-3. Start a local server:
+4. Start the development server:
 
-   - Open a terminal in the project directory
-   - Run the following command:
-
-   ```bash
-   python3 -m http.server 8000
-   ```
-
-4. Open your web browser and navigate to:
-
-```
-http://localhost:8000
+```bash
+npm run dev
+# or
+yarn dev
 ```
 
-## Usage
-
-1. Click the "Click to Play" button to start the visualization
-2. The visualization will show vertical bars representing different frequency bands
-3. Click the "Stop" button to stop the audio and visualization
+5. Open your browser and navigate to `http://localhost:5173`
 
 ## Project Structure
 
-- `index.html` - Main HTML file
-- `sketch.js` - Contains the p5.js visualization code
-- `style.css` - Styling for the play/stop buttons
-- `p5/` - p5.js library files
-- `hey-moon.mp3` - Example audio file (replace with your own)
+```
+src/
+├── components/
+│   ├── modes/           # Visualization mode components
+│   │   ├── sketch.js    # Default visualization mode
+│   │   └── serene.js    # Alternative visualization mode
+│   ├── AudioVisualizer.jsx  # Main visualization component
+│   └── Home.jsx         # Home page with file/mode selection
+├── App.jsx              # Main app component with routing
+└── main.jsx            # Application entry point
+```
 
-## Notes
+## Adding New Visualization Modes
 
-- The visualization works best with music that has a good range of frequencies
-- The bars' heights represent the amplitude of different frequency bands
-- The visualization is responsive and will adjust to your window size
+1. Create a new file in the `src/components/modes` directory
+2. Follow the pattern of existing mode files:
+   - Export a p5 sketch function
+   - Implement `setup`, `draw`, and `setAudio` methods
+   - Add any custom visualization logic
+3. Import and add the new mode to the `MODES` object in `src/components/AudioVisualizer.jsx`
+4. Add the name of the new mode to the `MODES` object in `src/components/Home.jsx`
+
+## Development Notes
+
+- The project uses React 18 with Strict Mode enabled for better development experience
+- p5.js is used for canvas rendering and audio analysis
+- The application uses React Router for navigation
+- All visualization modes are modular and can be easily extended
 
 `width` = canvas width, var from p5
 `height` = canvas height, var from p5
@@ -74,8 +105,3 @@ http://localhost:8000
 ## License
 
 [Your chosen license]
-
-## Credits
-
-- Built with [p5.js](https://p5js.org/)
-- Uses [p5.sound](https://p5js.org/reference/#/libraries/p5.sound) for audio analysis
