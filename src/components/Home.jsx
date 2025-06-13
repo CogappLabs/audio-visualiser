@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const MODES = {
-  sketch: "Sketch",
+  sketch: "Level meter",
   serene: "Serene",
   circle: "Circle",
+  zen: "Zen",
+  "cursor-special": "Cursor Special",
   // Add more modes here as they are created
 };
 
@@ -14,16 +16,35 @@ const Home = () => {
   const navigate = useNavigate();
 
   const audioFiles = [
-    { name: "Hey Moon", path: "/sources/hey-moon.mp3" },
+    {
+      name: "Hey Moon",
+      path: "/sources/hey-moon/hey-moon.mp3",
+      html: "/sources/hey-moon/hey-moon.html",
+    },
+    {
+      name: "Gaps",
+      path: "/sources/gaps/gaps.mp3",
+      html: "/sources/gaps/gaps.html",
+    },
+    { name: "The Jellyfish", path: "/sources/jellyfish/jellyfish.mp3" },
+    { name: "FunK with IIIF", path: "/sources/iiif/iiif.mp3" },
     // Add more audio files here
   ];
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (selectedAudio) {
+      // Find the selected audio file object
+      const selectedAudioFile = audioFiles.find(
+        (file) => file.path === selectedAudio
+      );
+
+      // Go into fullscreen
+      document.body.requestFullscreen();
+      // Navigate to AudioVisualizer view
       navigate("/visualizer", {
         state: {
-          audioPath: selectedAudio,
+          audioFile: selectedAudioFile,
           mode: selectedMode,
         },
       });
