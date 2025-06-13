@@ -25,9 +25,10 @@ const Home = () => {
       name: "Gaps",
       path: "/sources/gaps/gaps.mp3",
       html: "/sources/gaps/gaps.html",
+      captions: "/sources/gaps/gaps.srt",
     },
-    { name: "The Jellyfish", path: "/sources/jellyfish/jellyfish.mp3" },
-    { name: "FunK with IIIF", path: "/sources/iiif/iiif.mp3" },
+    { name: "The Jellyfish", path: "/sources/jellyfish/jellyfish.mp3" , html: "/sources/jellyfish/jellyfish.html" ,  captions: "/sources/jellyfish/jellyfish.srt" },
+    { name: "FunK with IIIF", path: "/sources/iiif/iiif.mp3" , html: "/sources/iiif/iiif.html" , captions: "/sources/iiif/iiif.vtt" },
     // Add more audio files here
   ];
 
