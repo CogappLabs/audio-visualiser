@@ -1,54 +1,54 @@
 import p5 from "p5";
 
-const sketch = (p) => {
-  let sound;
+const sketch = (p, isPlaying) => {
   let fft;
-  let isPlaying = false;
   let audioPath;
+  let sound;
+  let playing = isPlaying; // Store the isPlaying state locally
 
-  p.setup = async () => {
+  p.setup = () => {
+    console.log("p5 setup called");
     p.createCanvas(window.innerWidth, window.innerHeight);
     fft = new p5.FFT();
     p.noStroke();
   };
 
   p.setAudio = async (path) => {
+    console.log("setAudio called with path:", path);
     audioPath = path;
     try {
+      // Make sure FFT is initialized
+      if (!fft) {
+        console.log("Initializing FFT...");
+        fft = new p5.FFT();
+      }
+
+      console.log("Loading sound...");
       sound = await p.loadSound(audioPath);
-      setupControls();
+      console.log("Sound loaded:", !!sound);
+
+      // Connect the sound to the FFT analyzer
+      console.log("Connecting sound to FFT...");
+      fft.setInput(sound);
+      console.log("Sound connected to FFT");
+
+      return sound; // Return the sound object to be managed by AudioVisualizer
     } catch (error) {
       console.error("Error loading sound:", error);
+      return null;
     }
   };
 
-  const setupControls = () => {
-    const playButton = document.getElementById("playButton");
-    const stopButton = document.getElementById("stopButton");
-
-    playButton.addEventListener("click", () => {
-      if (!isPlaying) {
-        sound.loop();
-        isPlaying = true;
-        playButton.style.display = "none";
-        stopButton.style.display = "block";
-      }
-    });
-
-    stopButton.addEventListener("click", () => {
-      if (isPlaying) {
-        sound.stop();
-        isPlaying = false;
-        stopButton.style.display = "none";
-        playButton.style.display = "block";
-      }
-    });
+  // Add a method to update the playing state
+  p.updatePlaying = (newState) => {
+    console.log("Updating playing state:", newState);
+    playing = newState;
   };
 
   p.draw = () => {
     p.background(0, 30);
 
-    if (isPlaying && fft) {
+    if (playing && fft) {
       let spectrum = fft.analyze();
       let size = p.width / spectrum.length;
 

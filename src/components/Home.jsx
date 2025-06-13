@@ -21,6 +21,9 @@ const Home = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (selectedAudio) {
+      // Go into fullscreen
+      document.body.requestFullscreen();
+      // Navigate to AudioVisualizer view
       navigate("/visualizer", {
         state: {
           audioPath: selectedAudio,
