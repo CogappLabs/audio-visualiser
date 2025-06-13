@@ -15,6 +15,13 @@ let outlineBlurRadius; // How much the blur spreads
 let blurSteps; // Number of steps for fake fill blur
 let blurAlpha; // Max alpha for fill blur
 let blurRadius; // How much larger the blur is than the main circle
+let sound;
+let fft;
+let isPlaying = false;
+
+function preload() {
+  sound = loadSound("mp3s/hey-moon.mp3");
+}
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -27,7 +34,7 @@ function setup() {
   circleColor2 = color(120, 255, 80); // green
   strokeColor = color(0, 0, 255); // white
   baseStrokeThickness = 80;
-  outlineNoiseScale = 50;
+  outlineNoiseScale = 3;
   outlineNoiseSpeed = 0.2;
   outlineBlurSteps = 8;
   outlineBlurAlpha = 60;
@@ -35,6 +42,30 @@ function setup() {
   blurSteps = 20;
   blurAlpha = 40;
   blurRadius = 60;
+
+  // Set up FFT
+  fft = new p5.FFT();
+
+  // Button logic
+  const playButton = document.getElementById("playButton");
+  const stopButton = document.getElementById("stopButton");
+
+  playButton.addEventListener("click", () => {
+    if (!isPlaying) {
+      sound.loop();
+      isPlaying = true;
+      playButton.style.display = "none";
+      stopButton.style.display = "block";
+    }
+  });
+  stopButton.addEventListener("click", () => {
+    if (isPlaying) {
+      sound.stop();
+      isPlaying = false;
+      stopButton.style.display = "none";
+      playButton.style.display = "block";
+    }
+  });
 }
 
 function draw() {
@@ -56,15 +87,25 @@ function draw() {
   let cLerp = (cos(t * 1.5) + 1) / 2;
   let fillCol = lerpColor(circleColor1, circleColor2, cLerp);
 
-  // Circle parameters
+  // --- Audio-driven circle size ---
+  let baseRadius = min(width, height) * 0.3;
   let cx = width / 2;
   let cy = height / 2;
-  let baseRadius = min(width, height) * 0.3;
+  let audioScale = 1;
+  if (isPlaying) {
+    let spectrum = fft.analyze();
+    let avg = spectrum.reduce((a, b) => a + b, 0) / spectrum.length;
+    // Map avg: 0 -> 0.1, 255 -> 1.0
+    audioScale = map(avg, 0, 255, 0.1, 1.0);
+  } else {
+    audioScale = 0.1;
+  }
+  let animatedRadius = baseRadius * audioScale;
 
   // Draw blurred edge (fake blur by drawing many circles)
   noStroke();
   for (let i = blurSteps; i > 0; i--) {
-    let r = baseRadius + map(i, 0, blurSteps, 0, blurRadius);
+    let r = animatedRadius + map(i, 0, blurSteps, 0, blurRadius);
     let a = blurAlpha * (i / blurSteps);
     fill(hue(fillCol), saturation(fillCol), brightness(fillCol), a);
     ellipse(cx, cy, r * 2, r * 2);
@@ -72,17 +113,28 @@ function draw() {
 
   // Draw main filled circle
   fill(fillCol);
-  ellipse(cx, cy, baseRadius * 2, baseRadius * 2);
+  ellipse(cx, cy, animatedRadius * 2, animatedRadius * 2);
 
   // Draw blurred, noisy outline
   for (let b = outlineBlurSteps; b > 0; b--) {
-    let blurR = baseRadius + map(b, 0, outlineBlurSteps, 0, outlineBlurRadius);
+    let blurR =
+      animatedRadius + map(b, 0, outlineBlurSteps, 0, outlineBlurRadius);
     let blurT =
       baseStrokeThickness +
       map(b, 0, outlineBlurSteps, 0, outlineBlurRadius * 1.2);
     let blurA = outlineBlurAlpha * (b / outlineBlurSteps);
     drawNoisyOutline(cx, cy, blurR, blurT, blurA, fillCol, t);
   }
+  // Draw main outline
+  drawNoisyOutline(
+    cx,
+    cy,
+    animatedRadius,
+    baseStrokeThickness,
+    255,
+    strokeColor,
+    t
+  );
 }
 
 // Draw a noisy, variable-thickness ring outline
