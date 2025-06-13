@@ -1,8 +1,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+// Import available modes
+import sketchMode from "./modes/sketch";
+import sereneMode from "./modes/serene";
+
+const MODES = {
+  sketch: "Sketch",
+  serene: "Serene",
+  // Add more modes here as they are created
+};
+
 const Home = () => {
   const [selectedAudio, setSelectedAudio] = useState("");
+  const [selectedMode, setSelectedMode] = useState("sketch");
   const navigate = useNavigate();
 
   const audioFiles = [
@@ -13,7 +24,12 @@ const Home = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (selectedAudio) {
-      navigate("/visualizer", { state: { audioPath: selectedAudio } });
+      navigate("/visualizer", {
+        state: {
+          audioPath: selectedAudio,
+          mode: selectedMode,
+        },
+      });
     }
   };
 
@@ -33,6 +49,21 @@ const Home = () => {
             {audioFiles.map((file) => (
               <option key={file.path} value={file.path}>
                 {file.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="mode-selector">
+          <label htmlFor="mode-select">Choose a visualization mode:</label>
+          <select
+            id="mode-select"
+            value={selectedMode}
+            onChange={(e) => setSelectedMode(e.target.value)}
+            required
+          >
+            {Object.entries(MODES).map(([mode, label]) => (
+              <option key={mode} value={mode}>
+                {label}
               </option>
             ))}
           </select>
