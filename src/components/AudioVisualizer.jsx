@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 // Import modes
 import sketchMode from "./modes/sketch";
 import sereneMode from "./modes/serene";
+import circleVizMode from "./modes/circle_viz";
 
 // Make p5 available globally
 window.p5 = p5;
@@ -12,6 +13,7 @@ window.p5 = p5;
 const MODES = {
   sketch: sketchMode,
   serene: sereneMode,
+  circle: circleVizMode,
   // Add more modes here as they are created
 };
 

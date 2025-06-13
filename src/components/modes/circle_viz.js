@@ -2,204 +2,224 @@
 // Demo: Animated circle with gradient fill, animated background, variable stroke, and blurred edge
 // All key variables are set at the top for easy control
 
-// === Configurable Variables ===
-let bgColor1, bgColor2; // Background gradient colors
-let circleColor1, circleColor2; // Circle fill gradient colors
-let strokeColor; // Outline color
-let baseStrokeThickness; // Base outline thickness
-let outlineNoiseScale; // How much noise affects thickness
-let outlineNoiseSpeed; // How fast the noise animates
-let outlineBlurSteps; // How many blurred outlines to draw
-let outlineBlurAlpha; // Max alpha for blurred outlines
-let outlineBlurRadius; // How much the blur spreads
-let blurSteps; // Number of steps for fake fill blur
-let blurAlpha; // Max alpha for fill blur
-let blurRadius; // How much larger the blur is than the main circle
-let sound;
-let fft;
-let isPlaying = false;
+import p5 from "p5";
 
-function preload() {
-  sound = loadSound("mp3s/hey-moon.mp3");
-}
+const circleViz = (p) => {
+  // === Configurable Variables ===
+  let bgColor1, bgColor2; // Background gradient colors
+  let circleColor1, circleColor2; // Circle fill gradient colors
+  let strokeColor; // Outline color
+  let baseStrokeThickness; // Base outline thickness
+  let outlineNoiseScale; // How much noise affects thickness
+  let outlineNoiseSpeed; // How fast the noise animates
+  let outlineBlurSteps; // How many blurred outlines to draw
+  let outlineBlurAlpha; // Max alpha for blurred outlines
+  let outlineBlurRadius; // How much the blur spreads
+  let blurSteps; // Number of steps for fake fill blur
+  let blurAlpha; // Max alpha for fill blur
+  let blurRadius; // How much larger the blur is than the main circle
+  let sound;
+  let fft;
+  let isPlaying = false;
+  let audioPath;
 
-function setup() {
-  createCanvas(windowWidth, windowHeight);
-  colorMode(HSB, 255);
+  p.setup = () => {
+    p.createCanvas(window.innerWidth, window.innerHeight);
+    p.colorMode(p.HSB, 255);
 
-  // === Set initial values ===
-  bgColor1 = color(10, 100, 30); // dark blue
-  bgColor2 = color(0, 255, 60); // dark red
-  circleColor1 = color(0, 255, 80); // red
-  circleColor2 = color(120, 255, 80); // green
-  strokeColor = color(0, 0, 255); // white
-  baseStrokeThickness = 80;
-  outlineNoiseScale = 3;
-  outlineNoiseSpeed = 0.2;
-  outlineBlurSteps = 8;
-  outlineBlurAlpha = 60;
-  outlineBlurRadius = 18;
-  blurSteps = 20;
-  blurAlpha = 40;
-  blurRadius = 60;
+    // === Set initial values ===
+    bgColor1 = p.color(10, 100, 30); // dark blue
+    bgColor2 = p.color(0, 255, 60); // dark red
+    circleColor1 = p.color(0, 255, 80); // red
+    circleColor2 = p.color(120, 255, 80); // green
+    strokeColor = p.color(0, 0, 255); // white
+    baseStrokeThickness = 80;
+    outlineNoiseScale = 3;
+    outlineNoiseSpeed = 0.2;
+    outlineBlurSteps = 8;
+    outlineBlurAlpha = 60;
+    outlineBlurRadius = 18;
+    blurSteps = 20;
+    blurAlpha = 40;
+    blurRadius = 60;
 
-  // Set up FFT
-  fft = new p5.FFT();
+    // Set up FFT
+    fft = new p5.FFT();
+    p.noStroke();
+  };
 
-  // Button logic
-  const playButton = document.getElementById("playButton");
-  const stopButton = document.getElementById("stopButton");
-
-  playButton.addEventListener("click", () => {
-    if (!isPlaying) {
-      sound.loop();
-      isPlaying = true;
-      playButton.style.display = "none";
-      stopButton.style.display = "block";
+  p.setAudio = async (path) => {
+    audioPath = path;
+    try {
+      sound = await p.loadSound(audioPath);
+      setupControls();
+    } catch (error) {
+      console.error("Error loading sound:", error);
     }
-  });
-  stopButton.addEventListener("click", () => {
+  };
+
+  const setupControls = () => {
+    const playButton = document.getElementById("playButton");
+    const stopButton = document.getElementById("stopButton");
+
+    playButton.addEventListener("click", () => {
+      if (!isPlaying) {
+        sound.loop();
+        isPlaying = true;
+        playButton.style.display = "none";
+        stopButton.style.display = "block";
+      }
+    });
+
+    stopButton.addEventListener("click", () => {
+      if (isPlaying) {
+        sound.stop();
+        isPlaying = false;
+        stopButton.style.display = "none";
+        playButton.style.display = "block";
+      }
+    });
+  };
+
+  p.draw = () => {
+    // Animate background gradient
+    let t = p.millis() * 0.0002;
+    let lerpAmt = (p.sin(t) + 1) / 2;
+    let bgCol = p.lerpColor(bgColor1, bgColor2, lerpAmt);
+    setGradient(
+      0,
+      0,
+      p.width,
+      p.height,
+      bgCol,
+      p.lerpColor(bgColor2, bgColor1, lerpAmt),
+      1
+    );
+
+    // Animate circle fill gradient
+    let cLerp = (p.cos(t * 1.5) + 1) / 2;
+    let fillCol = p.lerpColor(circleColor1, circleColor2, cLerp);
+
+    // --- Audio-driven circle size ---
+    let baseRadius = p.min(p.width, p.height) * 0.3;
+    let cx = p.width / 2;
+    let cy = p.height / 2;
+    let audioScale = 1;
     if (isPlaying) {
-      sound.stop();
-      isPlaying = false;
-      stopButton.style.display = "none";
-      playButton.style.display = "block";
+      let spectrum = fft.analyze();
+      let avg = spectrum.reduce((a, b) => a + b, 0) / spectrum.length;
+      // Map avg: 0 -> 0.1, 255 -> 1.0
+      audioScale = p.map(avg, 0, 255, 0.1, 1.0);
+    } else {
+      audioScale = 0.1;
     }
-  });
-}
+    let animatedRadius = baseRadius * audioScale;
 
-function draw() {
-  // Animate background gradient
-  let t = millis() * 0.0002;
-  let lerpAmt = (sin(t) + 1) / 2;
-  let bgCol = lerpColor(bgColor1, bgColor2, lerpAmt);
-  setGradient(
-    0,
-    0,
-    width,
-    height,
-    bgCol,
-    lerpColor(bgColor2, bgColor1, lerpAmt),
-    1
-  );
+    // Draw blurred edge (fake blur by drawing many circles)
+    p.noStroke();
+    for (let i = blurSteps; i > 0; i--) {
+      let r = animatedRadius + p.map(i, 0, blurSteps, 0, blurRadius);
+      let a = blurAlpha * (i / blurSteps);
+      p.fill(p.hue(fillCol), p.saturation(fillCol), p.brightness(fillCol), a);
+      p.ellipse(cx, cy, r * 2, r * 2);
+    }
 
-  // Animate circle fill gradient
-  let cLerp = (cos(t * 1.5) + 1) / 2;
-  let fillCol = lerpColor(circleColor1, circleColor2, cLerp);
+    // Draw main filled circle
+    p.fill(fillCol);
+    p.ellipse(cx, cy, animatedRadius * 2, animatedRadius * 2);
 
-  // --- Audio-driven circle size ---
-  let baseRadius = min(width, height) * 0.3;
-  let cx = width / 2;
-  let cy = height / 2;
-  let audioScale = 1;
-  if (isPlaying) {
-    let spectrum = fft.analyze();
-    let avg = spectrum.reduce((a, b) => a + b, 0) / spectrum.length;
-    // Map avg: 0 -> 0.1, 255 -> 1.0
-    audioScale = map(avg, 0, 255, 0.1, 1.0);
-  } else {
-    audioScale = 0.1;
-  }
-  let animatedRadius = baseRadius * audioScale;
-
-  // Draw blurred edge (fake blur by drawing many circles)
-  noStroke();
-  for (let i = blurSteps; i > 0; i--) {
-    let r = animatedRadius + map(i, 0, blurSteps, 0, blurRadius);
-    let a = blurAlpha * (i / blurSteps);
-    fill(hue(fillCol), saturation(fillCol), brightness(fillCol), a);
-    ellipse(cx, cy, r * 2, r * 2);
-  }
-
-  // Draw main filled circle
-  fill(fillCol);
-  ellipse(cx, cy, animatedRadius * 2, animatedRadius * 2);
-
-  // Draw blurred, noisy outline
-  for (let b = outlineBlurSteps; b > 0; b--) {
-    let blurR =
-      animatedRadius + map(b, 0, outlineBlurSteps, 0, outlineBlurRadius);
-    let blurT =
-      baseStrokeThickness +
-      map(b, 0, outlineBlurSteps, 0, outlineBlurRadius * 1.2);
-    let blurA = outlineBlurAlpha * (b / outlineBlurSteps);
-    drawNoisyOutline(cx, cy, blurR, blurT, blurA, fillCol, t);
-  }
-  // Draw main outline
-  drawNoisyOutline(
-    cx,
-    cy,
-    animatedRadius,
-    baseStrokeThickness,
-    255,
-    strokeColor,
-    t
-  );
-}
-
-// Draw a noisy, variable-thickness ring outline
-function drawNoisyOutline(cx, cy, radius, thickness, alpha, col, t) {
-  let steps = 180;
-  let noiseSeed = t * outlineNoiseSpeed;
-  let angleStep = TWO_PI / steps;
-  noFill();
-  stroke(col);
-  strokeWeight(baseStrokeThickness * 1.2);
-  beginShape();
-  for (let i = 0; i <= steps; i++) {
-    let angle = i * angleStep;
-    let n = noise(
-      cos(angle) * outlineNoiseScale + 100,
-      sin(angle) * outlineNoiseScale + 100,
-      noiseSeed
+    // Draw blurred, noisy outline
+    for (let b = outlineBlurSteps; b > 0; b--) {
+      let blurR =
+        animatedRadius + p.map(b, 0, outlineBlurSteps, 0, outlineBlurRadius);
+      let blurT =
+        baseStrokeThickness +
+        p.map(b, 0, outlineBlurSteps, 0, outlineBlurRadius * 1.2);
+      let blurA = outlineBlurAlpha * (b / outlineBlurSteps);
+      drawNoisyOutline(cx, cy, blurR, blurT, blurA, fillCol, t);
+    }
+    // Draw main outline
+    drawNoisyOutline(
+      cx,
+      cy,
+      animatedRadius,
+      baseStrokeThickness,
+      255,
+      strokeColor,
+      t
     );
-    let localThickness = thickness * (0.7 + 0.6 * n);
-    let rOuter = radius + localThickness / 2;
-    let x = cx + cos(angle) * rOuter;
-    let y = cy + sin(angle) * rOuter;
-    stroke(red(col), green(col), blue(col), alpha);
-    if (i === 0) {
-      beginShape();
-    }
-    vertex(x, y);
-  }
-  endShape();
-  beginShape();
-  for (let i = steps; i >= 0; i--) {
-    let angle = i * angleStep;
-    let n = noise(
-      cos(angle) * outlineNoiseScale + 100,
-      sin(angle) * outlineNoiseScale + 100,
-      noiseSeed
-    );
-    let localThickness = thickness * (0.7 + 0.6 * n);
-    let rInner = radius - localThickness / 2;
-    let x = cx + cos(angle) * rInner;
-    let y = cy + sin(angle) * rInner;
-    stroke(red(col), green(col), blue(col), alpha);
-    vertex(x, y);
-  }
-  endShape(CLOSE);
-}
+  };
 
-// Helper: Draw vertical or horizontal gradient
-function setGradient(x, y, w, h, c1, c2, axis) {
-  noFill();
-  if (axis === 1) {
-    // Y axis
-    for (let i = y; i <= y + h; i++) {
-      let inter = map(i, y, y + h, 0, 1);
-      let c = lerpColor(c1, c2, inter);
-      stroke(c);
-      line(x, i, x + w, i);
+  // Draw a noisy, variable-thickness ring outline
+  function drawNoisyOutline(cx, cy, radius, thickness, alpha, col, t) {
+    let steps = 180;
+    let noiseSeed = t * outlineNoiseSpeed;
+    let angleStep = p.TWO_PI / steps;
+    p.noFill();
+    p.stroke(col);
+    p.strokeWeight(baseStrokeThickness * 1.2);
+    p.beginShape();
+    for (let i = 0; i <= steps; i++) {
+      let angle = i * angleStep;
+      let n = p.noise(
+        p.cos(angle) * outlineNoiseScale + 100,
+        p.sin(angle) * outlineNoiseScale + 100,
+        noiseSeed
+      );
+      let localThickness = thickness * (0.7 + 0.6 * n);
+      let rOuter = radius + localThickness / 2;
+      let x = cx + p.cos(angle) * rOuter;
+      let y = cy + p.sin(angle) * rOuter;
+      p.stroke(p.red(col), p.green(col), p.blue(col), alpha);
+      if (i === 0) {
+        p.beginShape();
+      }
+      p.vertex(x, y);
     }
-  } else {
-    // X axis
-    for (let i = x; i <= x + w; i++) {
-      let inter = map(i, x, x + w, 0, 1);
-      let c = lerpColor(c1, c2, inter);
-      stroke(c);
-      line(i, y, i, y + h);
+    p.endShape();
+    p.beginShape();
+    for (let i = steps; i >= 0; i--) {
+      let angle = i * angleStep;
+      let n = p.noise(
+        p.cos(angle) * outlineNoiseScale + 100,
+        p.sin(angle) * outlineNoiseScale + 100,
+        noiseSeed
+      );
+      let localThickness = thickness * (0.7 + 0.6 * n);
+      let rInner = radius - localThickness / 2;
+      let x = cx + p.cos(angle) * rInner;
+      let y = cy + p.sin(angle) * rInner;
+      p.stroke(p.red(col), p.green(col), p.blue(col), alpha);
+      p.vertex(x, y);
+    }
+    p.endShape(p.CLOSE);
+  }
+
+  // Helper: Draw vertical or horizontal gradient
+  function setGradient(x, y, w, h, c1, c2, axis) {
+    p.noFill();
+    if (axis === 1) {
+      // Y axis
+      for (let i = y; i <= y + h; i++) {
+        let inter = p.map(i, y, y + h, 0, 1);
+        let c = p.lerpColor(c1, c2, inter);
+        p.stroke(c);
+        p.line(x, i, x + w, i);
+      }
+    } else {
+      // X axis
+      for (let i = x; i <= x + w; i++) {
+        let inter = p.map(i, x, x + w, 0, 1);
+        let c = p.lerpColor(c1, c2, inter);
+        p.stroke(c);
+        p.line(i, y, i, y + h);
+      }
     }
   }
-}
+
+  p.windowResized = () => {
+    p.resizeCanvas(window.innerWidth, window.innerHeight);
+  };
+};
+
+export default circleViz;
