@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-function CaptionOverlay({ captionPath }) {
+function CaptionOverlay({ captionPath, sound }) {
 
   const [htmlContent, setHtmlContent] = useState('');
 
@@ -10,7 +10,7 @@ function CaptionOverlay({ captionPath }) {
         const vttText = await response.text();
         const jsonLyrics = parseVTT(vttText);
     
-        console.log(jsonLyrics);
+        //console.log(jsonLyrics);
         return jsonLyrics;
       } catch (error) {
         console.error("Error loading VTT file:", error);
@@ -50,8 +50,31 @@ function CaptionOverlay({ captionPath }) {
     if (!captionPath) return;
 
     let captions = loadVTT(captionPath);
+    console.log("captions", captions);
     // console.log('p5inst', p5Instance);
-  }, [captionPath]);
+    
+    let currentTime = sound.currentTime();
+
+    console.log("sound time in captions", currentTime);
+
+    for (let i = 0; i < captions.length; i++) {
+			let cue = captions[i];
+      console.log("looping", i);
+			if (currentTime >= cue.start && currentTime <= cue.end) {
+        console.log("caption number", i);
+				lyricsContainer.innerHTML = cue.formattedText;
+				// Only update the image if the cue has changed to avoid
+				// DOSing the API.
+				break;
+			} else {
+        const randomEmojis = getRandomMusicEmojis();
+        lyricsContainer.textContent = randomEmojis.join(" ");
+      }
+		}
+
+
+
+  }, [captionPath], [sound]);
 
   return (
     <div className='centered-overlay'>caption</div>

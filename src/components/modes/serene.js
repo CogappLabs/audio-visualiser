@@ -44,7 +44,8 @@ const serene = (p) => {
   p.draw = () => {
     // Check if sound exists and is playing
     if (sound && sound.isPlaying() && fft) {
-      console.log("Drawing serene visualization...");
+      //console.log("Drawing serene visualization...");
+      fft.smooth(0.95);
       let spectrum = fft.analyze();
       let size = p.width / spectrum.length;
 
@@ -54,7 +55,11 @@ const serene = (p) => {
         p.rect(x, y, size, p.height - y);
 
         let energy = p.map(fft.getEnergy("bass", "treble"), 0, 255, 0, 100);
-        let c1 = p.color(50, 50, energy);
+        //let centre = fft.getCentroid();
+        let centre = p.map(fft.getCentroid(), 0, 2048, 0, 100); // no idea what max is
+        //console.log('centre', centre);
+        //console.log('energy', energy);
+        let c1 = p.color(centre, 50, energy);
         p.background(c1);
       }
     }

@@ -44,6 +44,7 @@ const sketch = (p) => {
     // Check if sound exists and is playing
     if (sound && sound.isPlaying() && fft) {
       console.log("Drawing visualization...");
+      fft.smooth(0.5);
       let spectrum = fft.analyze();
       let size = p.width / spectrum.length;
 
