@@ -50,8 +50,13 @@ function CaptionOverlay({ captionPath, sound }) {
   const convertTimestampToSeconds = (timestamp) => {
     // Split by ':' to separate hours, minutes, and the rest
     const [hours, minutes, rest] = timestamp.split(":");
-    // Split the last part by ',' to separate seconds and milliseconds
-    const [seconds, milliseconds] = rest.split(",");
+    let seconds, milliseconds;
+    // Split the last part by ',' or '.' to separate seconds and milliseconds
+    if (rest.includes(",")) {
+      [seconds, milliseconds] = rest.split(",");
+    } else if (rest.includes(".")) {
+      [seconds, milliseconds] = rest.split(".");
+    }
 
     // Convert all parts to integers
     const totalSeconds =
