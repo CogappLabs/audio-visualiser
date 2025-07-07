@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import p5 from "p5";
 import { useLocation } from "react-router-dom";
 import TextOverlay from "./TextOverlay";
-import CaptionOverlay from './CaptionOverlay';
+import CaptionOverlay from "./CaptionOverlay";
+import { useNavigate } from "react-router-dom";
 
 // Import modes
 import sketchMode from "./modes/sketch";
@@ -35,7 +36,8 @@ const AudioVisualizer = () => {
   const [showOverlay, setShowOverlay] = useState(false);
   const [fragmentPath, setFragmentPath] = useState("");
   const [showCaptionsOverlay, setShowCaptionsOverlay] = useState(false);
-  const [captionPath, setCaptionPath] = useState('');
+  const [captionPath, setCaptionPath] = useState("");
+  const navigate = useNavigate();
 
   const showTextClick = () => {
     console.log("showing text");
@@ -54,7 +56,7 @@ const AudioVisualizer = () => {
     setShowCaptionsOverlay(true);
     console.log("sound time", sound.currentTime());
   };
-  
+
   const hideCaptionsClick = () => {
     console.log("hiding captions");
     setShowCaptionsOverlay(false);
@@ -265,11 +267,19 @@ const AudioVisualizer = () => {
     return <div>Loading audio...</div>;
   }
 
+  const handleReturnToMainMenu = (e) => {
+    e.preventDefault();
+    // Navigate to Home view
+    navigate("/");
+  };
+
   return (
     <div>
       <div ref={sketchRef}></div>
       {showOverlay && <TextOverlay fragmentPath={fragmentPath} />}
-      {showCaptionsOverlay && <CaptionOverlay captionPath={captionPath} sound={sound} />}
+      {showCaptionsOverlay && (
+        <CaptionOverlay captionPath={captionPath} sound={sound} />
+      )}
       <div className="controls">
         <button
           id="playButton"
@@ -287,8 +297,13 @@ const AudioVisualizer = () => {
           <button onClick={showTextClick}>Show text</button>
         )}
         {showOverlay && <button onClick={hideTextClick}>Hide text</button>}
-        {!showCaptionsOverlay && <button onClick={showCaptionsClick}>Show captions</button>}
-        {showCaptionsOverlay && <button onClick={hideCaptionsClick}>Hide captions</button>}
+        {!showCaptionsOverlay && (
+          <button onClick={showCaptionsClick}>Show captions</button>
+        )}
+        {showCaptionsOverlay && (
+          <button onClick={hideCaptionsClick}>Hide captions</button>
+        )}
+        <button onClick={handleReturnToMainMenu}>Return to menu</button>
       </div>
     </div>
   );
