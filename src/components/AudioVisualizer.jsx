@@ -29,6 +29,7 @@ const AudioVisualizer = () => {
   const p5Instance = useRef(null);
   const playBtnRef = useRef(null);
   const stopBtnRef = useRef(null);
+  const controlsRef = useRef(null);
   const location = useLocation();
   const { audioFile, mode } = location.state || {};
   const [sound, setSound] = useState(null);
@@ -38,7 +39,70 @@ const AudioVisualizer = () => {
   const [fragmentPath, setFragmentPath] = useState("");
   const [showCaptionsOverlay, setShowCaptionsOverlay] = useState(false);
   const [captionPath, setCaptionPath] = useState("");
+  const [controlsVisible, setControlsVisible] = useState(true);
   const navigate = useNavigate();
+
+  // Auto-hide controls functionality after (5s of) inactivity
+  useEffect(() => {
+    if (isLoading) return;
+
+    let hideTimeout;
+    let fadeTimeout;
+
+    const showControls = () => {
+      setControlsVisible(true);
+      if (hideTimeout) {
+        clearTimeout(hideTimeout);
+      }
+      if (fadeTimeout) {
+        clearTimeout(fadeTimeout);
+      }
+    };
+
+    const hideControls = () => {
+      setControlsVisible(false);
+    };
+
+    const startHideTimer = () => {
+      hideTimeout = setTimeout(() => {
+        hideControls();
+      }, 5000); // 5 seconds
+    };
+
+    const handleUserActivity = () => {
+      showControls();
+      startHideTimer();
+    };
+
+    // Start the initial timer after component is loaded
+    fadeTimeout = setTimeout(() => {
+      startHideTimer();
+    }, 1000); // Wait 1 second after loading to start the timer
+
+    // Add event listeners for user activity
+    const events = [
+      "mousemove",
+      "mousedown",
+      "keydown",
+      "keyup",
+      "touchstart",
+      "touchmove",
+    ];
+
+    // Show controls again on user activity
+    events.forEach((event) => {
+      document.addEventListener(event, handleUserActivity, { passive: true });
+    });
+
+    // Cleanup function
+    return () => {
+      if (hideTimeout) clearTimeout(hideTimeout);
+      if (fadeTimeout) clearTimeout(fadeTimeout);
+      events.forEach((event) => {
+        document.removeEventListener(event, handleUserActivity);
+      });
+    };
+  }, [isLoading]);
 
   const showTextClick = () => {
     console.log("showing text");
@@ -259,7 +323,15 @@ const AudioVisualizer = () => {
       {showCaptionsOverlay && (
         <CaptionOverlay captionPath={captionPath} sound={sound} />
       )}
-      <div className="controls">
+      <div
+        className="controls"
+        ref={controlsRef}
+        style={{
+          opacity: controlsVisible ? 1 : 0,
+          transition: "opacity 0.5s ease-in-out",
+          pointerEvents: controlsVisible ? "auto" : "none",
+        }}
+      >
         <button
           id="playButton"
           style={{ display: isPlaying ? "none" : "block" }}
