@@ -27,9 +27,10 @@ const MODES = {
 const AudioVisualizer = () => {
   const sketchRef = useRef(null);
   const p5Instance = useRef(null);
+  const playBtnRef = useRef(null);
+  const stopBtnRef = useRef(null);
   const location = useLocation();
   const { audioFile, mode } = location.state || {};
-
   const [sound, setSound] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -62,53 +63,41 @@ const AudioVisualizer = () => {
     setShowCaptionsOverlay(false);
   };
 
-  const setupControls = () => {
-    console.log("Setting up controls...");
-    const playButton = document.getElementById("playButton");
-    const stopButton = document.getElementById("stopButton");
-
-    if (!playButton || !stopButton) {
-      console.error("Control buttons not found in DOM");
-      return;
-    }
-
-    playButton.addEventListener("click", () => {
-      console.log("Play button clicked, sound state:", sound);
-      if (sound && !sound.isPlaying()) {
-        try {
-          console.log("Attempting to play sound...");
-          sound.play();
-          console.log("Sound play called successfully");
-          setIsPlaying(true);
-          playButton.style.display = "none";
-          stopButton.style.display = "block";
-        } catch (error) {
-          console.error("Error playing sound:", error);
-        }
-      }
-    });
-
-    stopButton.addEventListener("click", () => {
-      console.log("Stop button clicked");
-      if (sound && sound.isPlaying()) {
-        try {
-          sound.stop();
-          setIsPlaying(false);
-          stopButton.style.display = "none";
-          playButton.style.display = "block";
-        } catch (error) {
-          console.error("Error stopping sound:", error);
-        }
-      }
-    });
-  };
-
   // Set up controls after component is rendered
   useEffect(() => {
-    console.log("Controls effect triggered", { isLoading, sound: !!sound });
-    if (!isLoading) {
-      setupControls();
-    }
+    if (isLoading || !sound) return;
+
+    const playButton = playBtnRef.current;
+    const stopButton = stopBtnRef.current;
+
+    if (!playButton || !stopButton) return;
+
+    const handlePlay = () => {
+      if (sound && !sound.isPlaying()) {
+        sound.play();
+        setIsPlaying(true);
+        playButton.style.display = "none";
+        stopButton.style.display = "block";
+      }
+    };
+
+    const handleStop = () => {
+      if (sound && sound.isPlaying()) {
+        sound.stop();
+        setIsPlaying(false);
+        stopButton.style.display = "none";
+        playButton.style.display = "block";
+      }
+    };
+
+    playButton.addEventListener("click", handlePlay);
+    stopButton.addEventListener("click", handleStop);
+
+    // Cleanup: remove listeners on unmount or when dependencies change
+    return () => {
+      playButton.removeEventListener("click", handlePlay);
+      stopButton.removeEventListener("click", handleStop);
+    };
   }, [isLoading, sound]);
 
   // Cleanup effect for sound
@@ -195,8 +184,8 @@ const AudioVisualizer = () => {
                   loadedSound.play();
                   setIsPlaying(true);
                   // Hide play button, show stop button
-                  const playButton = document.getElementById("playButton");
-                  const stopButton = document.getElementById("stopButton");
+                  const playButton = playBtnRef.current;
+                  const stopButton = stopBtnRef.current;
                   if (playButton && stopButton) {
                     playButton.style.display = "none";
                     stopButton.style.display = "block";
@@ -229,16 +218,6 @@ const AudioVisualizer = () => {
     return () => {
       console.log("Cleaning up AudioVisualizer...");
       isActive = false;
-
-      if (sound) {
-        console.log("Stopping sound on cleanup...");
-        try {
-          sound.stop();
-          sound.disconnect();
-        } catch (error) {
-          console.error("Error stopping sound during cleanup:", error);
-        }
-      }
 
       if (p5Instance.current) {
         console.log("Removing p5 instance...");
@@ -284,12 +263,14 @@ const AudioVisualizer = () => {
         <button
           id="playButton"
           style={{ display: isPlaying ? "none" : "block" }}
+          ref={playBtnRef}
         >
           Play
         </button>
         <button
           id="stopButton"
           style={{ display: isPlaying ? "block" : "none" }}
+          ref={stopBtnRef}
         >
           Stop
         </button>

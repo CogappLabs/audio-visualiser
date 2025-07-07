@@ -97,7 +97,11 @@ const Home = () => {
             ))}
           </select>
         </div>
-        <button type="submit" disabled={!selectedAudio}>
+        <button
+          type="submit"
+          disabled={!selectedAudio}
+          className="start-button"
+        >
           Start Visualization
         </button>
       </form>
