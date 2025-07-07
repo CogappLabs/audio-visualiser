@@ -1,25 +1,34 @@
 #root {
-  margin: 0 auto;
   text-align: center;
 }
 
 .home-container {
-  min-height: 100vh;
+  min-height: calc(100vh - 2rem);
+  width: calc(100% - 2rem);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   background-color: #1a1a1a;
   color: white;
-  padding: 2rem;
+  padding: 1rem;
 }
 
 .audio-selector {
-  margin: 2rem 0;
   display: flex;
-  flex-direction: column;
   gap: 1rem;
   align-items: center;
+}
+
+.mode-selector {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.start-button {
+  margin-top: 2rem;
 }
 
 select {
