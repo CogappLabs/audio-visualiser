@@ -17,4 +17,6 @@ export default defineConfig({
       },
     },
   },
+  // For gh-pages
+  base: "/audio-visualiser",
 });
