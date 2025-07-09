@@ -105,7 +105,7 @@ const AudioVisualizer = () => {
   }, [isLoading]);
 
   const showTextClick = () => {
-    console.log("showing text");
+    console.log("showing text.");
     setFragmentPath(audioFile.html);
     setShowOverlay(true);
   };

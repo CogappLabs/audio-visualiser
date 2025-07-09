@@ -1,9 +1,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { resolve } from "path";
+import { fileURLToPath, URL } from "url";
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [react()],
   resolve: {
     alias: {
@@ -13,10 +14,13 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        main: resolve(__dirname, "index.html"),
+        main: resolve(
+          fileURLToPath(new URL(".", import.meta.url)),
+          "index.html"
+        ),
       },
     },
   },
-  // For gh-pages
-  base: "/audio-visualiser",
-});
+  // For gh-pages - only set base in production
+  base: command === "build" ? "/audio-visualiser" : "/",
+}));
