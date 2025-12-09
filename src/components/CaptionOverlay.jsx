@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 
-function CaptionOverlay({ captionPath, sound }) {
-  // const [htmlContent, setHtmlContent] = useState("");
+function CaptionOverlay({ captionPath, sound, showCaptionsOverlay }) {
   const [captions, setCaptions] = useState("");
   const captionBoxRef = useRef(null);
 
@@ -105,7 +104,12 @@ function CaptionOverlay({ captionPath, sound }) {
   }, [captionPath, sound, loadVTT, captions]);
 
   return (
-    <div className="centered-overlay" ref={captionBoxRef}>
+    <div
+      className={`centered-overlay caption-overlay ${
+        showCaptionsOverlay ? "show" : ""
+      }`} // Show/hide this with CSS so the whole component doesn't have to re-render each time (which caused flashing placeholder text)
+      ref={captionBoxRef}
+    >
       [Captions have not started]
     </div>
   );

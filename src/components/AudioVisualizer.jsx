@@ -108,6 +108,7 @@ const AudioVisualizer = () => {
     console.log("showing text.");
     setFragmentPath(audioFile.html);
     setShowOverlay(true);
+    setShowCaptionsOverlay(false);
   };
 
   const hideTextClick = () => {
@@ -120,6 +121,7 @@ const AudioVisualizer = () => {
     setCaptionPath(audioFile.captions);
     setShowCaptionsOverlay(true);
     console.log("sound time", sound.currentTime());
+    setShowOverlay(false);
   };
 
   const hideCaptionsClick = () => {
@@ -320,9 +322,7 @@ const AudioVisualizer = () => {
     <div>
       <div ref={sketchRef}></div>
       {showOverlay && <TextOverlay fragmentPath={fragmentPath} />}
-      {showCaptionsOverlay && (
-        <CaptionOverlay captionPath={captionPath} sound={sound} />
-      )}
+      <CaptionOverlay captionPath={captionPath} sound={sound} showCaptionsOverlay={showCaptionsOverlay} />
       <div
         className="controls"
         ref={controlsRef}

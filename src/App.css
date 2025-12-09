@@ -98,3 +98,11 @@ button:focus-visible {
   max-width: 600px;
   /* optional: limit max width for better appearance */
 }
+
+.caption-overlay {
+  display: none;
+}
+
+.caption-overlay.show {
+  display: block;
+}
