@@ -24,7 +24,7 @@ const MODES = {
   // Add more modes here as they are created
 };
 
-const AudioVisualizer = () => {
+const AudioVisualiser = () => {
   const sketchRef = useRef(null);
   const p5Instance = useRef(null);
   const playBtnRef = useRef(null);
@@ -204,8 +204,8 @@ const AudioVisualizer = () => {
   useEffect(() => {
     let isActive = true; // Flag to track if component is mounted
 
-    const initializeVisualizer = async () => {
-      console.log("Initializing visualizer...", { audioFile, mode });
+    const initializeVisualiser = async () => {
+      console.log("Initializing visualiser...", { audioFile, mode });
       if (!audioFile?.path || !mode || !isActive) {
         console.log("Missing required props:", { audioFile, mode });
         return;
@@ -274,15 +274,15 @@ const AudioVisualizer = () => {
 
         setIsLoading(false);
       } catch (error) {
-        console.error("Error initializing visualizer:", error);
+        console.error("Error initializing visualiser:", error);
         setIsLoading(false);
       }
     };
 
-    initializeVisualizer();
+    initializeVisualiser();
 
     return () => {
-      console.log("Cleaning up AudioVisualizer...");
+      console.log("Cleaning up AudioVisualiser...");
       isActive = false;
 
       if (p5Instance.current) {
@@ -366,4 +366,4 @@ const AudioVisualizer = () => {
   );
 };
 
-export default AudioVisualizer;
+export default AudioVisualiser;

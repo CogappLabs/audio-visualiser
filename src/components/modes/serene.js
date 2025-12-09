@@ -34,7 +34,7 @@ const serene = (p) => {
       fft.setInput(sound);
       console.log("Sound connected to FFT");
 
-      return sound; // Return the sound object to be managed by AudioVisualizer
+      return sound; // Return the sound object to be managed by AudioVisualiser
     } catch (error) {
       console.error("Error loading sound:", error);
       return null;
@@ -44,7 +44,7 @@ const serene = (p) => {
   p.draw = () => {
     // Check if sound exists and is playing
     if (sound && sound.isPlaying() && fft) {
-      //console.log("Drawing serene visualization...");
+      //console.log("Drawing serene visualisation...");
       fft.smooth(0.95);
       let spectrum = fft.analyze();
       let size = p.width / spectrum.length;

@@ -31,7 +31,7 @@ const zen = (p) => {
       fft.setInput(sound);
       console.log("Sound connected to FFT");
 
-      return sound; // Return the sound object to be managed by AudioVisualizer
+      return sound; // Return the sound object to be managed by AudioVisualiser
     } catch (error) {
       console.error("Error loading sound:", error);
       return null;

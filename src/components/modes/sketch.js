@@ -31,7 +31,7 @@ const sketch = (p) => {
       fft.setInput(sound);
       console.log("Sound connected to FFT");
 
-      return sound; // Return the sound object to be managed by AudioVisualizer
+      return sound; // Return the sound object to be managed by AudioVisualiser
     } catch (error) {
       console.error("Error loading sound:", error);
       return null;
@@ -43,7 +43,7 @@ const sketch = (p) => {
 
     // Check if sound exists and is playing
     if (sound && sound.isPlaying() && fft) {
-      console.log("Drawing visualization...");
+      console.log("Drawing visualisation...");
       fft.smooth(0.5);
       let spectrum = fft.analyze();
       let size = p.width / spectrum.length;

@@ -31,7 +31,7 @@ const cursor = (p) => {
       fft.setInput(sound);
       console.log("Sound connected to FFT");
 
-      return sound; // Return the sound object to be managed by AudioVisualizer
+      return sound; // Return the sound object to be managed by AudioVisualiser
     } catch (error) {
       console.error("Error loading sound:", error);
       return null;
@@ -43,12 +43,12 @@ const cursor = (p) => {
 
     // Check if sound exists and is playing
     if (sound && sound.isPlaying() && fft) {
-      console.log("Drawing cursor visualization...");
+      console.log("Drawing cursor visualisation...");
       let spectrum = fft.analyze();
       let size = p.width / spectrum.length;
 
       for (let i = 0; i < spectrum.length; i++) {
-        // Create a circular visualization
+        // Create a circular visualisation
         let angle = p.map(i, 0, spectrum.length, 0, p.TWO_PI);
         let radius = p.map(spectrum[i], 0, 255, 50, p.width / 2);
         let x = p.width / 2 + p.cos(angle) * radius;

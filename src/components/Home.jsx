@@ -51,8 +51,8 @@ const Home = () => {
 
       // Go into fullscreen
       document.body.requestFullscreen();
-      // Navigate to AudioVisualizer view
-      navigate("/visualizer", {
+      // Navigate to AudioVisualiser view
+      navigate("/visualiser", {
         state: {
           audioFile: selectedAudioFile,
           mode: selectedMode,
@@ -63,7 +63,7 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      <h1>Audio Visualizer</h1>
+      <h1>Audio Visualiser</h1>
       <form onSubmit={handleSubmit}>
         <div className="audio-selector">
           <label htmlFor="audio-select">Choose an audio file:</label>
@@ -82,7 +82,7 @@ const Home = () => {
           </select>
         </div>
         <div className="mode-selector">
-          <label htmlFor="mode-select">Choose a visualization mode:</label>
+          <label htmlFor="mode-select">Choose a visualisation mode:</label>
           <select
             id="mode-select"
             value={selectedMode}
@@ -101,7 +101,7 @@ const Home = () => {
           disabled={!selectedAudio}
           className="start-button"
         >
-          Start Visualization
+          Start Visualisation
         </button>
       </form>
     </div>

@@ -11,13 +11,13 @@ Currently, two official plugins are available:
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
 
-# Audio Visualizer
+# Audio Visualiser
 
-A React-based audio visualizer that creates dynamic visualizations using p5.js. The application allows users to select different audio files and visualization modes to create unique visual experiences.
+A React-based audio visualiser that creates dynamic visualisations using p5.js. The application allows users to select different audio files and visualisation modes to create unique visual experiences.
 
 ## Features
 
-- Multiple visualization modes
+- Multiple visualisation modes
 - Audio file selection
 - Real-time frequency analysis
 - Responsive canvas that adapts to window size
@@ -73,23 +73,23 @@ yarn dev
 ```
 src/
 ├── components/
-│   ├── modes/           # Visualization mode components
-│   │   ├── sketch.js    # Default visualization mode
-│   │   └── serene.js    # Alternative visualization mode
-│   ├── AudioVisualizer.jsx  # Main visualization component
+│   ├── modes/           # Visualisation mode components
+│   │   ├── sketch.js    # Default visualisation mode
+│   │   └── serene.js    # Alternative visualisation mode
+│   ├── AudioVisualiser.jsx  # Main visualisation component
 │   └── Home.jsx         # Home page with file/mode selection
 ├── App.jsx              # Main app component with routing
 └── main.jsx            # Application entry point
 ```
 
-## Adding New Visualization Modes
+## Adding New Visualisation Modes
 
 1. Create a new file in the `src/components/modes` directory
 2. Follow the pattern of existing mode files:
    - Export a p5 sketch function
    - Implement `setup`, `draw`, and `setAudio` methods
-   - Add any custom visualization logic
-3. Import and add the new mode to the `MODES` object in `src/components/AudioVisualizer.jsx`
+   - Add any custom visualisation logic
+3. Import and add the new mode to the `MODES` object in `src/components/AudioVisualiser.jsx`
 4. Add the name of the new mode to the `MODES` object in `src/components/Home.jsx`
 
 ## Development Notes
@@ -97,7 +97,7 @@ src/
 - The project uses React 18 with Strict Mode enabled for better development experience
 - p5.js is used for canvas rendering and audio analysis
 - The application uses React Router for navigation
-- All visualization modes are modular and can be easily extended
+- All visualisation modes are modular and can be easily extended
 
 `width` = canvas width, var from p5
 `height` = canvas height, var from p5

@@ -1,6 +1,6 @@
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./components/Home";
-import AudioVisualizer from "./components/AudioVisualizer";
+import AudioVisualiser from "./components/AudioVisualiser";
 import "./App.css";
 
 function App() {
@@ -8,7 +8,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/visualizer" element={<AudioVisualizer />} />
+        <Route path="/visualiser" element={<AudioVisualiser />} />
       </Routes>
     </Router>
   );
