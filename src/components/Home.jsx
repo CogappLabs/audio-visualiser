@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const MODES = {
-  sketch: "Level meter",
   serene: "Serene",
+  sketch: "Level meter",
   circle: "Circle",
   zen: "Zen",
   "cursor-special": "Cursor Special",
@@ -12,7 +12,7 @@ const MODES = {
 
 const Home = () => {
   const [selectedAudio, setSelectedAudio] = useState("");
-  const [selectedMode, setSelectedMode] = useState("sketch");
+  const [selectedMode, setSelectedMode] = useState("serene");
   const navigate = useNavigate();
 
   const audioFiles = [
