@@ -68,6 +68,22 @@ yarn dev
 
 5. Open your browser and navigate to `http://localhost:5173`
 
+## Deploying
+
+To deploy to Github Pages, run:
+
+```bash
+npm run predeploy
+```
+
+to build a production version of the app, and then:
+
+```bash
+npm run deploy
+```
+
+to deploy the app to GH pages. You should find this triggers a build and deploy action in https://github.com/CogappLabs/audio-visualiser/actions.
+
 ## Project Structure
 
 ```
