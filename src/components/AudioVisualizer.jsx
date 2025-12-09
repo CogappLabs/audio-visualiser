@@ -322,7 +322,11 @@ const AudioVisualizer = () => {
     <div>
       <div ref={sketchRef}></div>
       {showOverlay && <TextOverlay fragmentPath={fragmentPath} />}
-      <CaptionOverlay captionPath={captionPath} sound={sound} showCaptionsOverlay={showCaptionsOverlay} />
+      <CaptionOverlay
+        captionPath={captionPath}
+        sound={sound}
+        showCaptionsOverlay={showCaptionsOverlay}
+      />
       <div
         className="controls"
         ref={controlsRef}
@@ -350,7 +354,7 @@ const AudioVisualizer = () => {
           <button onClick={showTextClick}>Show text</button>
         )}
         {showOverlay && <button onClick={hideTextClick}>Hide text</button>}
-        {!showCaptionsOverlay && (
+        {audioFile.captions && !showCaptionsOverlay && (
           <button onClick={showCaptionsClick}>Show captions</button>
         )}
         {showCaptionsOverlay && (

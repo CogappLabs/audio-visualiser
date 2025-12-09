@@ -19,7 +19,6 @@ const Home = () => {
     {
       name: "Hey Moon",
       path: "./sources/hey-moon/hey-moon.mp3",
-      html: "./sources/hey-moon/hey-moon.html",
     },
     {
       name: "Gaps",
